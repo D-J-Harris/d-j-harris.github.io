@@ -1,3 +1,3 @@
-# Your blog
+# Deep Bites by Dan
 
-This is the repository for your blog! Click *_config.yml* above to get started and fill in the details. Then click *index.md* and edit it to start creating your home page.
+Digesting Deep Learning and Beyond, One Bite at a Time
