@@ -1,3 +1,4 @@
 # Deep Bites by Dan
 
-Digesting Deep Learning and Beyond, One Bite at a Time
+[Digesting Deep Learning and Beyond, One Bite at a Time]
+(d-j-harris.github.io)
