@@ -4,12 +4,9 @@ Blog by Daniel Harris, MSc Student in Artificial Intelligence from the Universit
 
 This is somewhere for me to post digestable reviews from interesting papers and topics I have stumbled across.
 
-[GitHub]
-(https://github.com/D-J-Harris)
+[GitHub](https://github.com/D-J-Harris)
 
-[LinkedIn]
-(https://www.linkedin.com/in/daniel-j-harris/)
+[LinkedIn](https://www.linkedin.com/in/daniel-j-harris/)
 
-[Resume]
-(/Daniel_Harris_CV.pdf)
+[Resume](/Daniel_Harris_CV.pdf)
 
