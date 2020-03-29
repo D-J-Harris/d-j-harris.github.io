@@ -11,5 +11,5 @@ This is somewhere for me to post digestable reviews from interesting papers and 
 (https://www.linkedin.com/in/daniel-j-harris/)
 
 [Resume]
-(/resume.pdf)
+(/Daniel_Harris_CV.pdf)
 
