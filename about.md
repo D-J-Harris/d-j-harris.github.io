@@ -1,12 +1,18 @@
-# About
+---
+layout: page
+title: About
+permalink: /about/
+---
 
-Blog by Daniel Harris, MSc Student in Artificial Intelligence from the University of Edinburgh. Previously BSc in Physics from the University of Cambridge.
+This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
 
-This is somewhere for me to post digestable reviews from interesting papers and topics I have stumbled across.
+You can find the source code for Minima at GitHub:
+[jekyll][jekyll-organization] /
+[minima](https://github.com/jekyll/minima)
 
-[GitHub](https://github.com/D-J-Harris)
+You can find the source code for Jekyll at GitHub:
+[jekyll][jekyll-organization] /
+[jekyll](https://github.com/jekyll/jekyll)
 
-[LinkedIn](https://www.linkedin.com/in/daniel-j-harris/)
 
-[Resume](/Daniel_Harris_CV.pdf)
-
+[jekyll-organization]: https://github.com/jekyll
