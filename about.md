@@ -8,5 +8,5 @@ This is somewhere for me to post digestable reviews from interesting papers and 
 
 [LinkedIn](https://www.linkedin.com/in/daniel-j-harris/)
 
-[Resume](/Daniel_Harris_CV.pdf)
+[Resume](images/Daniel_Harris_CV.pdf)
 
