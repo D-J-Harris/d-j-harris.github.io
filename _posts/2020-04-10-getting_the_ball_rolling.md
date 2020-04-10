@@ -37,7 +37,7 @@ repentance for any previously committed and pushed sins...
 
 + Dependencies - I will include instructions for how an environment should be set up
 + Training Scripts - I will include scripts using which models can be trained and fit
-+ Evaluation Scripts - I will include scripts using which experiments can be run and evaluated
++ Evaluation Scripts - I will include scripts using which experiments can be run
 + Pretrained Models - I will provide free access to pretrained model weights
 + Results - I will clearly outline results, and include scripts to reproduce these
 
