@@ -1,4 +1,10 @@
-# Getting the Ball Rolling
+---
+layout: post
+comments: false
+title: "Getting the Ball Rolling"
+date: 2017-12-31 23:00:00
+tags: 
+---
 
 I thought I'd start my posting with a short article about my plans for this site, and some practices I'm going to try
 and hold myself to. I've been sitting on this empty site for a few weeks now; maybe it's coursework getting in the way,
