@@ -1,7 +1,7 @@
 title: Dan's Deep Bites
 author: Daniel Harris
 description: > # this means to ignore newlines until "show_excerpts:"
-  Digesting Deep Learning and Beyond, One Bite at a Time.
+
 
 show_excerpts: false # set to true to show excerpts on the homepage
 
