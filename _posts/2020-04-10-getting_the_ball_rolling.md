@@ -24,7 +24,7 @@ about interesting areas in the field of machine learning. This is likely to take
 processing (NLP) and theoretical machine learning, but we'll see...
 
 In addition, I plan to post more infrequent deeper dives on a smattering of these posts (or 'Bites'), which I've 
-humorously called 'Monthly Mouthfuls'. This will be a segment where I synthesis interesting ideas into code, which 
+humorously called 'Monthly Mouthfuls'. This will be a segment where I synthesise interesting ideas into code, which 
 you can follow to learn how it might be implemented. 
 
 ## Being a Good Little Scientist
