@@ -13,7 +13,7 @@ minima:
   # generate social links in footer
   social_links:
     # twitter: jekyllrb
-    github:  https://github.com/D-J-Harris
+    github: https://github.com/D-J-Harris
     # devto: jekyll
     # dribbble: jekyll
     # facebook: jekyll
