@@ -8,4 +8,4 @@
 layout: home
 ---
 
-# Bites
+## Bites
