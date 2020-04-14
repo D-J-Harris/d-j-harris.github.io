@@ -2,7 +2,7 @@
 layout: post
 comments: false
 title: "Making Small Talk"
-date: 2020-04-12 18:00:00
+date: 2020-04-14 18:00:00
 tags: 
 ---
 
@@ -108,11 +108,12 @@ be sent, distributed systems can avoid exceeding bandwidth limits and therefore 
 + Compressing Gradients - this is where my work will step in. This area looks at the ability to compress gradients to
 smaller sizes before they are communicated, in such a way that enough information is retained to have minimal impact
 on the accuracy of the resulting model. Due to the compression limitation of lossless compression, these techniques are
-often lossy, and fall under mainly two broad categories: gradient quantisation, and gradient sparsification.
+often lossy, and fall under mainly two broad categories: gradient quantisation, and gradient sparsification (figure 1).
 
 ![Gradient Compression Cases]({{ '/assets/images/making_small_talk/quant_vs_spars.png' | relative_url }})
 {: style="width: 600px;" class="center"}
-*Fig. 2. Architecture of a generative adversarial network. (Image source: 
+*fig. 1. Sketch demonstrating the effect of gradient quantisation and sparsification on a gradient vector.
+(Image source: 
 [Tang et al.](https://arxiv.org/pdf/2003.06307.pdf))*
 
 ### Gradient Quantisation
