@@ -55,9 +55,11 @@ defined on the task at hand. In doing this, the model should be generalisable - 
 a given distribution (e.g. the pixels in an image of cats), to the target result (e.g. is it a cat). This process is
 called optimisation, and a popular algorithm for this is Stochastic Gradient Descent (SGD). Mathematically this 
 iterative method takes the form:
+
 $$
 \mathbf{\theta}_{t+1} = \mathbf{\theta}_t - \eta \nabla_{\theta} J(\mathbf{x}_t; \theta)
 $$
+
 for objective function $J$, and sample of our data $\mathbf{x}_t$ at timestep $t$. The way this sample is taken already
 allows us to determine some of the speed with which the model trains: moving from the stochastic setting of one data
 point to a larger batch size of many data points can lead to computational speedup due to parallelism in GPUs. Perfect!
@@ -107,6 +109,11 @@ be sent, distributed systems can avoid exceeding bandwidth limits and therefore 
 smaller sizes before they are communicated, in such a way that enough information is retained to have minimal impact
 on the accuracy of the resulting model. Due to the compression limitation of lossless compression, these techniques are
 often lossy, and fall under mainly two broad categories: gradient quantisation, and gradient sparsification.
+
+![Gradient Compression Cases]({{ '/assets/images/making_small_talk/quant_vs_spars.png' | relative_url }})
+{: style="width: 600px;" class="center"}
+*Fig. 2. Architecture of a generative adversarial network. (Image source: 
+[Tang et al.](https://arxiv.org/pdf/2003.06307.pdf))*
 
 ### Gradient Quantisation
 
