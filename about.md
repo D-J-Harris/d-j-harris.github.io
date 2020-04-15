@@ -1,3 +1,9 @@
+---
+layout: page
+title: About
+permalink: /about/
+---
+
 Site by Daniel Harris, MSc Student in Artificial Intelligence from the University of Edinburgh. Previously BSc in
 Physics from the University of Cambridge. CV can be found [here](/assets/images/general/CV.pdf).
 

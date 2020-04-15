@@ -1,10 +1,11 @@
 ---
 layout: post
-comments: false
 title: "Making Small Talk"
 date: 2020-04-14 18:00:00
-tags: 
 ---
+
+> Covering an introduction to distributed deep learning, and in particular beginning to cover gradient compression -
+> a technique used to reduce communication overhead between machines when training a large deep learning model.
 
 Going against everything my first post set out to make clear, this first Bite is going to be an introduction to the
 background work of the dissertation I will be completing over summer. I will be looking at distributed

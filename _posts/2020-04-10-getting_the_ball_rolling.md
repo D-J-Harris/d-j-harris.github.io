@@ -6,6 +6,9 @@ date: 2020-04-10 18:00:00
 tags: 
 ---
 
+> Introducing the site, what my plans are with it, and best practices recently released in the industry for sharing
+> research-level code.
+
 I thought I'd start my posting with a short article about my plans for this site, and some practices I'm going to try
 and hold myself to. I've been sitting on this empty site for a few weeks now; maybe it's coursework getting in the way,
 maybe it's for fear of getting my words down and out there in the world... either way, baby steps...
