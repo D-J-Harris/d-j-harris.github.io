@@ -56,7 +56,7 @@ function sendToServer(image, text){
         }
         document.getElementById("sendPostButton").disabled = false;
     };
-    const url = "http://dharris.pythonanywhere.com//calculate";
+    const url = "https://dharris.pythonanywhere.com//calculate";
     xhr.open("POST", url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     const sendData = JSON.stringify({
