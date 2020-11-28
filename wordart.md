@@ -51,8 +51,12 @@ function sendToServer(image, text){
             console.log(myimg)
             document.getElementById("placehere").appendChild(myimg);
         }
+        else{
+            alert("Unexpected error... try again with perhaps different text or number of repetitions");
+        }
+        document.getElementById("sendPostButton").disabled = false;
     };
-    const url = "http://127.0.0.1:5000/calculate";
+    const url = "http://dharris.pythonanywhere.com//calculate";
     xhr.open("POST", url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     const sendData = JSON.stringify({
