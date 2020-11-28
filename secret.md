@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Potluck
-permalink: /potluck/
+title: Draw Something
+permalink: /secret/
 ---
 
 <script type="text/javascript">
@@ -45,12 +45,6 @@ function draw() {
     ctx.closePath();
 }
 
-function save() {
-    document.getElementById("canvasimg").style.border = "2px solid";
-    var dataURL = canvas.toDataURL();
-    document.getElementById("canvasimg").src = dataURL;
-    document.getElementById("canvasimg").style.display = "inline";
-}
 
 function findxy(res, e) {
     if (res == 'down') {
@@ -84,9 +78,8 @@ function findxy(res, e) {
 }
 </script>
 <body onload="init()">
-    Draw a Number! Desktop Only <br>
-    <canvas id="can" width="400" height="400" style="border:2px solid;"></canvas>
+    Desktop Only
+    <br><canvas id="can" width="400" height="400" style="border:2px solid;"></canvas>
     <img id="canvasimg" style="display:none;">
     <br>
-    <input type="button" value="save" class="button" size="30" onclick="save()">
 </body>
