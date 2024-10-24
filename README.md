@@ -1,9 +1,7 @@
 <div align="center">
-<h1>Small Bytes</h1>
+<a href="https://d-j-harris.github.io/"><h1>Small Bytes</h1></a>
 
 Personal blog page, built using [zola](https://www.getzola.org/documentation/getting-started/overview/) and the [mabuya](https://github.com/semanticdata/mabuya) theme
-
-Check it out [here](https://d-j-harris.github.io/) (hosted on Github Pages)
 
 </div>
 
