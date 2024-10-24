@@ -1,7 +1,6 @@
-base_url = "https://mabuya.vercel.app/"
-title = "Mabuya"
-description = "Mabuya is a minimal Zola theme for building light and SEO-ready blogs. Put your work front and center with Mabuya as the base of your project."
-author = "Miguel Pimentel"
+base_url = "https://d-j-harris.github.io/"
+title = "Small Bytes"
+description = "Occasional posts about what I've been learning and doing"
 
 compile_sass = true
 generate_feeds = true
@@ -17,18 +16,15 @@ highlight_theme = "visual-studio-dark"
 smart_punctuation = true
 
 [extra]
-author = "Miguel Pimentel"
-email = "contact@miguelpimentel.do"
-github = "https://github.com/semanticdata"
-timeformat = "%B %e, %Y"                   # e.g. June 14, 2021
+author = "Daniel Harris"
+github = "https://github.com/D-J-Harris"
+timeformat = "%B %e, %Y"  # e.g. June 14, 2021
+katex_enable = true
 
 [[extra.menu]]
-name = "Archive"
+name = "Home"
 url = "/"
 
 [[extra.menu]]
 name = "Tags"
 url = "tags"
-
-[extra.footer]
-info = 'Powered by <a href="https://www.getzola.org" target="_blank">Zola</a> and <a href="https://github.com/semanticdata/mabuya">Mabuya</a>.'

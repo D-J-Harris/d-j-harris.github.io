@@ -6,16 +6,33 @@
   <title>{% block title %}{{ config.title }}{% endblock title %}</title>
   <meta name="description" itemprop="about" content="{{config.description}}" />
 
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ get_url(path='assets/favicon-32x32.png') | safe }}" />
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ get_url(path='assets/favicon-16x16.png') | safe }}" />
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ get_url(path='assets/apple-touch-icon.png') | safe }}" />
+  <link
+    rel="icon"
+    type="image/png"
+    href="{{ get_url(path='assets/icon.png') | safe }}"
+  />
 
   <link rel="stylesheet" href="{{ get_url(path='main.css') | safe }}" />
-  {# <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bitter:400,700&display=swap" /> #}
 
-  {% if config.generate_feed %}
-  <link type="application/atom+xml" rel="alternate"
-    href="{{ get_url(path=config.feed_filename | default(value='atom.xml')) | safe }}"
-    title="{{ config.title | default(value='Mabuya') }}" />
+  {% if config.extra.katex_enable %}
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+    integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+"
+    crossorigin="anonymous"
+  />
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"
+    integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk"
+    crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"
+  ></script>
   {% endif %}
 </head>
