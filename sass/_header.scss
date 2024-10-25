@@ -21,6 +21,7 @@ header {
 
 .nav-title {
   @include variables.transition(all 0.2s ease-out);
+  display: flex;
   color: variables.$default-color;
 
   @media (max-width: 600px) {

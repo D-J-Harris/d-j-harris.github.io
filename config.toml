@@ -20,7 +20,6 @@ author = "Daniel Harris"
 github = "https://github.com/D-J-Harris"
 timeformat = "%B %e, %Y"  # e.g. June 14, 2021
 katex_enable = true
-banner_path = "/assets/icon.png"
 
 [[extra.menu]]
 name = "Home"
