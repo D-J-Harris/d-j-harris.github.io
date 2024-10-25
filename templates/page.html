@@ -1,6 +1,4 @@
-{% extends "base.html"%}
-
-{% block content %}
+{% extends "base.html"%} {% block content %}
 <article class="post">
   <section class="post-info">
     {% if page.extra.author -%}
@@ -8,21 +6,40 @@
     {% elif config.extra.author -%}
     <span>Written by</span> {{ config.extra.author }}<br />
     {%- endif %}
-    <span>on&nbsp;</span><time datetime="{{ page.date }}">{{ page.date | date(format=config.extra.timeformat |
-      default(value="%B
-      %e, %Y"))}}</time>
+    <span>on&nbsp;</span
+    ><time datetime="{{ page.date }}"
+      >{{ page.date | date(format=config.extra.timeformat | default(value="%B
+      %e, %Y"))}}</time
+    >
   </section>
   <h1 class="post-title">{{ page.title }}</h1>
   <section class="post-line"></section>
-  {{ page.content | safe }}
+
+  {% if page.toc %}
+  <ul>
+    {% for h1 in page.toc %}
+    <li>
+      <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
+      {% if h1.children %}
+      <ul>
+        {% for h2 in h1.children %}
+        <li>
+          <a href="{{ h2.permalink | safe }}">{{ h2.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  <hr />
+  {% endif %} {{ page.content | safe }}
 </article>
 
 <section class="pagination">
   {% if page.higher -%}
   <a href="{{ page.higher.permalink | safe }}" class="left arrow">&#8592;</a>
-  {%- endif %}
-  {% include "partials/back-to-top.html" %}
-  {% if page.lower -%}
+  {%- endif %} {% include "partials/back-to-top.html" %} {% if page.lower -%}
   <a href="{{ page.lower.permalink | safe }}" class="right arrow">&#8594;</a>
   {%- endif %}
 </section>

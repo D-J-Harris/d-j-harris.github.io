@@ -1,57 +1,61 @@
 @use "variables";
 
 header {
-    box-shadow: 0 2px 2px -2px variables.$shadow-color;
+  box-shadow: 0 2px 2px -2px variables.$shadow-color;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: variables.$background-color;
 
-    @media (max-width: 600px) {
-        flex-direction: column;
-        padding-block-end: 0.5rem;
-    }
+  @media (max-width: 600px) {
+    flex-direction: column;
+    padding-block-end: 0.5rem;
+  }
 }
 
 .nav-title {
-    @include variables.transition(all 0.2s ease-out);
-    color: variables.$default-color;
+  @include variables.transition(all 0.2s ease-out);
+  color: variables.$default-color;
 
-    @media (max-width: 600px) {
-        h2 {
-            margin-bottom: 0.5rem;
-        }
+  @media (max-width: 600px) {
+    h2 {
+      margin-bottom: 0.5rem;
     }
+  }
 
-    &:hover,
-    &:focus {
-        opacity: 0.6;
-    }
+  &:hover,
+  &:focus {
+    opacity: 0.6;
+  }
 }
 
 header ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 1rem;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 1rem;
 }
 
 header li {
-    @include variables.transition(all 0.2s ease-out);
-    color: variables.$default-color;
-    display: inline-block;
-    opacity: 0.6;
-    padding: 0.25rem;
+  @include variables.transition(all 0.2s ease-out);
+  color: variables.$default-color;
+  display: inline-block;
+  opacity: 0.6;
+  padding: 0.25rem;
 
-    &:hover,
-    &:focus {
-        opacity: 1;
-    }
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
 }
 
 header a {
-    color: variables.$default-color;
+  color: variables.$default-color;
 }

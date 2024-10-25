@@ -1,7 +1,8 @@
 ---
 title: Gradient Compression in Distributed Deep Learning
-description: "Covering an introduction to distributed deep learning, and in particular beginning to cover gradient compression: a technique used to reduce communication overhead between machines when training a large deep learning model."
+description: "Introduction to distributed deep learning, and in particular gradient compression: a technique used to reduce communication overhead between machines when training a large deep learning model."
 date: 2020-04-14
+toc: true
 taxonomies:
   tags: [machine learning]
 ---

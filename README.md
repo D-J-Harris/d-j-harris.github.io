@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://d-j-harris.github.io/"><h1>Small Bytes</h1></a>
+<h1>Small Bytes</h1>
 
 Personal blog page, built using [zola](https://www.getzola.org/documentation/getting-started/overview/) and the [mabuya](https://github.com/semanticdata/mabuya) theme
 
