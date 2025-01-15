@@ -4,7 +4,7 @@ description: "Porting a language interpreter from C to Rust, and learning about 
 date: 2024-10-24
 toc: true
 taxonomies:
-  tags: [rust]
+  tags: [rust, languages]
 ---
 
 > Code for this project can be found [here](https://github.com/D-J-Harris/chef/tree/lox)
