@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://d-j-harris.github.io/</loc>
+    </url>
+    <url>
+        <loc>https://d-j-harris.github.io/chef-language/</loc>
+        <lastmod>2024-11-05</lastmod>
+    </url>
+    <url>
+        <loc>https://d-j-harris.github.io/crafting-interpreters/</loc>
+        <lastmod>2024-10-24</lastmod>
+    </url>
+    <url>
+        <loc>https://d-j-harris.github.io/gradient-compression/</loc>
+        <lastmod>2020-04-14</lastmod>
+    </url>
+    <url>
+        <loc>https://d-j-harris.github.io/page/1/</loc>
+    </url>
+    <url>
+        <loc>https://d-j-harris.github.io/tags/</loc>
+    </url>
+    <url>
+        <loc>https://d-j-harris.github.io/tags/languages/</loc>
+    </url>
+    <url>
+        <loc>https://d-j-harris.github.io/tags/machine-learning/</loc>
+    </url>
+    <url>
+        <loc>https://d-j-harris.github.io/tags/rust/</loc>
+    </url>
+</urlset>

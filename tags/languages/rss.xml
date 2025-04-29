@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Small Bytes - languages</title>
+      <link>https://d-j-harris.github.io/</link>
+      <description>Occasional posts about what I&#x27;ve been learning and doing</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://d-j-harris.github.io/tags/languages/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Tue, 05 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Chef - a Recipe-Oriented Language</title>
+          <pubDate>Tue, 05 Nov 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://d-j-harris.github.io/chef-language/</link>
+          <guid>https://d-j-harris.github.io/chef-language/</guid>
+          <description xml:base="https://d-j-harris.github.io/chef-language/">&lt;blockquote&gt;
+&lt;p&gt;Code for this project can be found &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;D-J-Harris&#x2F;chef&#x2F;&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;br &#x2F;&gt;
+&lt;p&gt;Following on from my previous work on a &lt;a href=&quot;..&#x2F;crafting-interpreters&quot;&gt;Rust-based Lox interpreter&lt;&#x2F;a&gt;, I wanted to get creative and design a language that had a unique look, and would allow me to test my understanding of the content I had picked up from the &lt;a href=&quot;https:&#x2F;&#x2F;craftinginterpreters.com&#x2F;&quot;&gt;Crafting Interpreters&lt;&#x2F;a&gt; book.&lt;&#x2F;p&gt;
+&lt;p&gt;The outcome of this is &lt;code&gt;chef&lt;&#x2F;code&gt; - a recipe-oriented language! This has been a lot of fun to work on, and I want to cover some of the decision choices I made that branch from Lox, and the interesting side-effects these had in the code.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;assets&#x2F;content&#x2F;chef-language&#x2F;fib_recipe.png&quot; alt=&quot;Fibonacci Function in Chef&quot; title=&quot;Fibonacci Recipe in Chef&quot; &#x2F;&gt;
+&lt;em&gt;Function to find the nth number in the Fibonacci sequence, in &lt;code&gt;chef&lt;&#x2F;code&gt;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;design-decisions&quot;&gt;Design Decisions&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;structure&quot;&gt;Structure&lt;&#x2F;h3&gt;
+&lt;p&gt;I wanted to design a language that looked and felt like a recipe at first sight - usability wasn’t a primary concern here. The first item to look at was code structure: usually recipes front-load the required ingredients, and move from there to step-by-step instructions. It felt natural for “ingredients” to be variables in the language, and for them to feel “global” - you wouldn’t want to be halfway through a recipe and find a new ingredient requirement!&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot;&gt;&lt;code&gt;&lt;span&gt;Decision 1. Variable declaration should happen up-front.
+&lt;&#x2F;span&gt;&lt;span&gt;Decision 2. Programme statements should form a numbered lists of &amp;quot;steps&amp;quot;.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;There was also the question of functions, classes and closures, and modelling these concepts in a way that remains the look and feel of a recipe. In the end I decided to keep the language lean, and retain only functions in the form of their own set of “sub-steps” that should be followed. Using action words like “bake” or “whisk” for function names could help maintain this spirit.&lt;&#x2F;p&gt;
+&lt;p&gt;I wanted the language to feel almost prose-like, with minimal nesting. So function declarations are also all declared up front. This leads itself to defining the programme in sections - you have your ingredients (variables), your actions or utensils you will need (functions) and your statements (steps). This separation also helps keep the source looking clean.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot;&gt;&lt;code&gt;&lt;span&gt;Decision 3. Functions declared up-front, also with their own steps.
+&lt;&#x2F;span&gt;&lt;span&gt;Decision 4. Programme should be split into sections.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;naming-and-syntax&quot;&gt;Naming and Syntax&lt;&#x2F;h3&gt;
+&lt;p&gt;When was the last time you read a recipe that asked you to whisk the EntityFactoryComponent? Or to bake &lt;code&gt;x&lt;&#x2F;code&gt; for 5 minutes? To address this, I moved from an &lt;code&gt;Ident&lt;&#x2F;code&gt; (identifier) token model, which represents &lt;em&gt;any&lt;&#x2F;em&gt; non-keyword string of characters, to two separate &lt;code&gt;VarIdent&lt;&#x2F;code&gt; and &lt;code&gt;FunIdent&lt;&#x2F;code&gt; tokens for variables and functions, each represented by an allow-list of words. For example, variables could only be &lt;code&gt;chocolate&lt;&#x2F;code&gt;, &lt;code&gt;banana&lt;&#x2F;code&gt;, &lt;code&gt;sugar&lt;&#x2F;code&gt; etc. and functions only action words like &lt;code&gt;whisk&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;I also decided to do away with symbols, such as parantheses in if-statements and curly braces for blocks. This led to interesting challenges, as I will discuss later, but helped to keep the prose-like style I was going for. Spoiler: the final language only uses &lt;code&gt;(&lt;&#x2F;code&gt; and &lt;code&gt;)&lt;&#x2F;code&gt; for grouping, &lt;code&gt;&quot;&lt;&#x2F;code&gt; for strings and &lt;code&gt;,&lt;&#x2F;code&gt; for function argument lists.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot;&gt;&lt;code&gt;&lt;span&gt;Decision 5. Use a pre-defined list of words for variables and functions.
+&lt;&#x2F;span&gt;&lt;span&gt;Decision 6. Minimise use of symbols not used in natural language.
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;scoping&quot;&gt;Scoping&lt;&#x2F;h3&gt;
+&lt;p&gt;When writing the original Lox interpreter, variables could take one of three forms: global, local or as an “upvalue” (for variables captured outside of a closure’s scope). I rid &lt;code&gt;chef&lt;&#x2F;code&gt; of closures, which left just two types to think about.&lt;&#x2F;p&gt;
+&lt;p&gt;Having all variables declared up-front, and never inline, seems to lend itself well to a world where all variables are global. However, typically having only global variables can make a programme more difficult to reason about - every interaction becomes a side effect. Instead, the top-level of the programme (the outer scope) can also be interpreted as the first local scope. This final decision leads to functions being pure (no side effects), and also having fewer lookups of heap-allocated variables from some map-structure (not that I was focusing on performance).&lt;&#x2F;p&gt;
+&lt;p&gt;In the long run, pre-defining all variables and functions in the outer scope led to the interesting property that the language does not have “call frames” in the original sense - all opcodes are contiguous, and function calls can be redirections of the instruction pointer rather than loading of function opcodes into a new call frame. Again, fewer allocations.&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot;&gt;&lt;code&gt;&lt;span&gt;Decision 7. No global variables, and only one code block (no concept of &amp;quot;function code&amp;quot;).
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;implementation&quot;&gt;Implementation&lt;&#x2F;h2&gt;
+&lt;p&gt;The link to the project code can be found at the top of the article - this will not be a deep dive on every change from the Lox implementation of a compiler &#x2F; bytecode interpreter to &lt;code&gt;chef&lt;&#x2F;code&gt;, but I wanted to highlight some of the more interesting changes&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;calling-functions&quot;&gt;Calling Functions&lt;&#x2F;h3&gt;
+&lt;p&gt;The design of having all function declarations up-front means all opcodes are laid out before compiling the rest of the programme. What this means is that we can shift our view of what it means to enter a function:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;before&lt;&#x2F;em&gt;:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;ol&gt;
+&lt;li&gt;Add a new frame to the call-stack&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;Instruction pointer and opcodes now accessed through looking at the heap-allocated function code&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;Frame captures where on the stack the function (callee) lives, with arguments coming after it&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;&lt;em&gt;after&lt;&#x2F;em&gt;:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;ol&gt;
+&lt;li&gt;Jump the instruction pointer to the start of the function, capturing where you were before so you can continue where you left off once the function ends&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;Profit&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This is pretty cool! Functions no longer need to be heap-allocated, and can be put on the stack with minimal information required:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span&gt;Function {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span&gt;name: String,    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; only needed for debugging
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span&gt;arity: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;,       &lt;&#x2F;span&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; only needed for error handling
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span&gt;ip_start: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; function size can be restricted to one word!
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;garbage-collection-not&quot;&gt;Garbage Collection (not!)&lt;&#x2F;h3&gt;
+&lt;p&gt;Unlike the core focus of my &lt;a href=&quot;..&#x2F;crafting-interpreters&quot;&gt;previous article&lt;&#x2F;a&gt;, GC did not play a role here at all! This was by design of the values that could be taken:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;pub enum &lt;&#x2F;span&gt;&lt;span&gt;Value {
+&lt;&#x2F;span&gt;&lt;span&gt;    Nil,
+&lt;&#x2F;span&gt;&lt;span&gt;    Number(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;f64&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    Boolean(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;bool&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;    String(String),
+&lt;&#x2F;span&gt;&lt;span&gt;    Function(Function),
+&lt;&#x2F;span&gt;&lt;span&gt;    NativeFunction(NativeFunction),
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;When the code had closures and heap-allocated function call-frames, then it was possible for the values in the programme to become self-referential and contain cycles that could not be easily cleaned up without some form of garbage collection.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;features&quot;&gt;Features&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;argument-lists&quot;&gt;Argument lists&lt;&#x2F;h3&gt;
+&lt;p&gt;Argument lists in function signatures and invocations read like proper English:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;1 argument : &lt;code&gt;whisk with x&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;2 arguments: &lt;code&gt;whisk with x and y&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;3 arguments: &lt;code&gt;whisk with x, y and z&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;4 arguments: &lt;code&gt;whisk with x, y, z and i&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;steps&quot;&gt;Steps&lt;&#x2F;h3&gt;
+&lt;p&gt;Yes, the code will not compile if your step count is not monotonically increasing from &lt;code&gt;1.&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;vscode-extension&quot;&gt;VSCode Extension&lt;&#x2F;h3&gt;
+&lt;p&gt;I also delved into the world of extension development as part of this project, which was fun! The code can be found &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;D-J-Harris&#x2F;chef-colouring&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Some neat features of this extension include the syntax declaration and colouring, as well as assistance with code indentation and step incrementing when hitting &lt;code&gt;Enter&lt;&#x2F;code&gt; and moving to the next step of a given function body.&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>Building a Lox Interpreter in Safe Rust</title>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://d-j-harris.github.io/crafting-interpreters/</link>
+          <guid>https://d-j-harris.github.io/crafting-interpreters/</guid>
+          <description xml:base="https://d-j-harris.github.io/crafting-interpreters/">&lt;blockquote&gt;
+&lt;p&gt;Code for this project can be found &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;D-J-Harris&#x2F;chef&#x2F;tree&#x2F;lox&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;br &#x2F;&gt;
+&lt;p&gt;I recently decided to pick up the famous (among SWEs at least) &lt;a href=&quot;https:&#x2F;&#x2F;craftinginterpreters.com&#x2F;&quot;&gt;Crafting Interpreters&lt;&#x2F;a&gt; book, and try my hand at writing its &lt;a href=&quot;https:&#x2F;&#x2F;craftinginterpreters.com&#x2F;a-bytecode-virtual-machine.html&quot;&gt;Part III bytecode interpreter&lt;&#x2F;a&gt; in safe Rust. This code is written in C, so it would be an interesting exercise in figuring out the differences between the two languages and any relative strengths or limitaitons.&lt;&#x2F;p&gt;
+&lt;p&gt;This is by no means an original work, and throughout the development process I had the pleasure of learning from several other Rust implementations that exist in the wild. In particular, I would like to credit&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ceronman&#x2F;loxido&#x2F;tree&#x2F;unsafe&#x2F;src&quot;&gt;Loxido&lt;&#x2F;a&gt; and the insightful accompanying &lt;a href=&quot;https:&#x2F;&#x2F;ceronman.com&#x2F;2021&#x2F;07&#x2F;22&#x2F;my-experience-crafting-an-interpreter-with-rust&#x2F;&quot;&gt;blog&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ajeetdsouza&#x2F;loxcraft&#x2F;tree&#x2F;main&quot;&gt;Loxcraft&lt;&#x2F;a&gt;, which takes performance to the next level&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;Folyd&#x2F;lox-lang&quot;&gt;Lox-lang&lt;&#x2F;a&gt; which I discovered later on and follows the same ideas for garbage collection&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h1 id=&quot;background&quot;&gt;Background&lt;&#x2F;h1&gt;
+&lt;p&gt;The objective of the book is to write an interpreter from the Lox language (grammar &lt;a href=&quot;https:&#x2F;&#x2F;craftinginterpreters.com&#x2F;appendix-i.html&quot;&gt;here&lt;&#x2F;a&gt;) from scratch, which brings together multiple components; scanning and parsing of some source code:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot;&gt;&lt;code&gt;&lt;span&gt;var message = &amp;quot;Hello, World!&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;print message;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Compilation of that parsing output into some intermediate representation (in the form of bytecode):&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot;&gt;&lt;code&gt;&lt;span&gt;Opcode    Line
+&lt;&#x2F;span&gt;&lt;span&gt;0000         1  Constant       [constant: Hello, World!]
+&lt;&#x2F;span&gt;&lt;span&gt;0002         |  DefineGlobal   [constant: message]
+&lt;&#x2F;span&gt;&lt;span&gt;0004         2  GetGlobal      [constant: message]
+&lt;&#x2F;span&gt;&lt;span&gt;0006         |  Print
+&lt;&#x2F;span&gt;&lt;span&gt;0007         |  Nil
+&lt;&#x2F;span&gt;&lt;span&gt;0008         |  Return
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;and finally interpretation of that bytecode into the final output: &lt;code&gt;Hello, World!&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;This blog does not set out to re-teach the book’s content, but I think one area in particular is worth diving into a bit more depth - garbage collection. Lox is a high level language, and its memory is handled behind-the-scenes by the implementing language.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;garbage-collection&quot;&gt;Garbage Collection&lt;&#x2F;h1&gt;
+&lt;p&gt;Immediately, this was one clear difference between C and Rust. The original implementation uses the mark and sweep alogorithm, which is a form of &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Tracing_garbage_collection&quot;&gt;tracing garbage collection&lt;&#x2F;a&gt; that involves maintaining shared pointers to objects allocated on the heap, and scanning through them from some root location to find which objects are reachable - and therefore conversely which objects are unreachable and up for de-allocation.&lt;&#x2F;p&gt;
+&lt;p&gt;This seemed like a perfect opportunity to deviate from the book, and flex some Rust muscles. Under the hood, Rust doesn’t use a “traditional” garbage collector, but instead implements resource management through &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;rust-by-example&#x2F;scope&#x2F;raii.html&quot;&gt;RAII&lt;&#x2F;a&gt; (Resource Acquisition Is Initialization) and reference counting. So instead of manually implementing a garbage collector, I could let Rust do it for me, right?&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;issues-in-rust&quot;&gt;Issues in Rust&lt;&#x2F;h2&gt;
+&lt;p&gt;First we must address shared borrows of the heap-allocated objects. At runtime there will be at least two places we want to hold references to our objects, and likey more:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;On the stack; Lox is a stack-based language, and we will be juggling references to values on and off the stack as the progamme runs.&lt;&#x2F;li&gt;
+&lt;li&gt;In our compiled code chunks; we allocate at runtime and hold references until they are no longer needed:&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span&gt;CodeBlock {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;pub &lt;&#x2F;span&gt;&lt;span&gt;constants: [Value; CONSTANTS_MAX_COUNT],
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This &lt;code&gt;Value&lt;&#x2F;code&gt; item is an enum, whose variants hold data on the stack - either primitive types, or references to the heap. Since we need shared borrowing (and in a single-threaded environment) these references take the form of reference counted type &lt;code&gt;Rc&amp;lt;T&amp;gt;&lt;&#x2F;code&gt;. Reference counts increase as more owners share the data, and as owners drop out of scope eventually the reference count ticks down to zero and the memory will be cleaned up for us.&lt;&#x2F;p&gt;
+&lt;p&gt;We also need to mutate some objects (for example class instance values with mutable members). So we need to turn to interior mutability here via the &lt;code&gt;RefCell&amp;lt;T&amp;gt;&lt;&#x2F;code&gt; type - this allows us to expose a safe interface for mutating data even behind an immutable reference.&lt;&#x2F;p&gt;
+&lt;p&gt;Introducing interior mutability unfortunately exposes us to a common problem in the form of &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;book&#x2F;ch15-06-reference-cycles.html&quot;&gt;leaked memory via circular references&lt;&#x2F;a&gt;. We are still in the land of “safe” rust, without dangling pointers and undefined behaviour. However the programme is now unsound. Consider the following, which will leak memory:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot;&gt;&lt;code&gt;&lt;span&gt;Class Person {}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  var alice = Person();
+&lt;&#x2F;span&gt;&lt;span&gt;  var bob = Person();
+&lt;&#x2F;span&gt;&lt;span&gt;  alice.friend = bob;
+&lt;&#x2F;span&gt;&lt;span&gt;  bob.friend = alice;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;&#x2F;&#x2F; alice and bob dropped, but still hold a reference to each other
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This problem of circular references is often attempted to be solved via introduction of weak references - these look like &lt;code&gt;std::rc::Weak&amp;lt;T&amp;gt;&lt;&#x2F;code&gt; and can be created via the &lt;code&gt;Rc::downgrade(&amp;amp;self)&lt;&#x2F;code&gt; method. If only weak references are left to an object, then it will be de-allocated and any attempt to access it will yield an empty &lt;code&gt;Option::None&lt;&#x2F;code&gt;. However this is often only viable if you can mould your domain to fit weak references; for example if you have a tree structure with weak references from child nodes to parent nodes (where parents will always outlive children). Alas, the Lox grammar allows for cyclic references, so we are stuck.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Aside: one highlight of memory leaking I came across while building this project is the ability to &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;nomicon&#x2F;leaking.html#rc&quot;&gt;leak memory via reference count overflow&lt;&#x2F;a&gt;. Ouch.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;can-it-be-done-safetm&quot;&gt;Can It Be Done &lt;code&gt;safe™&lt;&#x2F;code&gt;?&lt;&#x2F;h2&gt;
+&lt;p&gt;I spent a regretable amount of time reading up on the issue of garbage collection in Rust, and trying to make something work with pure Rust - I should have stopped earlier. Great amounts of research and review have gone into this topic, and an excellent review of the space can be found &lt;a href=&quot;https:&#x2F;&#x2F;manishearth.github.io&#x2F;blog&#x2F;2021&#x2F;04&#x2F;05&#x2F;a-tour-of-safe-tracing-gc-designs-in-rust&#x2F;&quot;&gt;here&lt;&#x2F;a&gt;. In particular, I was drawn to one particular implementation by Catherine West, who clearly faced the same issue when creating &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;kyren&#x2F;piccolo&#x2F;tree&#x2F;master&quot;&gt;piccolo&lt;&#x2F;a&gt;, an interpreter for the Lua language (great blog post on the topic &lt;a href=&quot;https:&#x2F;&#x2F;kyju.org&#x2F;blog&#x2F;rust-safe-garbage-collection&#x2F;&quot;&gt;here&lt;&#x2F;a&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;I decided to run with this and use the underlying &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;kyren&#x2F;gc-arena&quot;&gt;gc-arena&lt;&#x2F;a&gt; crate as a chance to learn from advanced Rust in the process. Internally I struggled with the notion that I wasn’t still leveraging “safe” Rust - the crate itself claims and looks to be safe, but under the hood uses unsafe. This is a blurred line you have to use your own judgement for; after all, the standard library is built on tons of unsafe Rust, even the &lt;code&gt;Rc&amp;lt;T&amp;gt;&lt;&#x2F;code&gt; type I so wanted to leverage intitially. It’s all a trust game.&lt;&#x2F;p&gt;
+&lt;p&gt;One interesting trick the &lt;code&gt;gc-arena&lt;&#x2F;code&gt; crate pulls to underpin its safety is leveraging lifetime subtyping and variance. The Rustonomicon covers the topic &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;nomicon&#x2F;subtyping.html&quot;&gt;in more depth&lt;&#x2F;a&gt;, but I’ll attempt to summarise here:&lt;&#x2F;p&gt;
+&lt;p&gt;Covariance means that if &lt;code&gt;A&lt;&#x2F;code&gt; is a subtype of &lt;code&gt;B&lt;&#x2F;code&gt;, then &lt;code&gt;F&amp;lt;A&amp;gt;&lt;&#x2F;code&gt; is a subtype of &lt;code&gt;F&amp;lt;B&amp;gt;&lt;&#x2F;code&gt;. For example in Rust, immutable references are &lt;em&gt;covariant&lt;&#x2F;em&gt; over their lifetimes. What this means is if we have two immutable references &lt;code&gt;&amp;amp;&#x27;longer T&lt;&#x2F;code&gt; and &lt;code&gt;&amp;amp;&#x27;shorter T&lt;&#x2F;code&gt;, then since a longer lifetime outlives a shorter lifetime (so is a subtype), then the longer lifetime reference is a subtype of the shorter reference lifetime. This subtyping enables the compiler to implicitly shorten lifetimes to ease borrowing rules for covariant types. Types such as &lt;code&gt;&amp;amp;&#x27;a mut T&lt;&#x2F;code&gt; are &lt;em&gt;invariant&lt;&#x2F;em&gt; over their lifetimes and so require exact matching of type parameters, preventing both subtyping and supertyping relationships.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span&gt;bar&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;#39;a&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;() {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; s: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;amp;&amp;#39;static str &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d69d85;&quot;&gt;&amp;quot;hi&amp;quot;&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; t: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;amp;&amp;#39;a str &lt;&#x2F;span&gt;&lt;span&gt;= s;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; this assignment is allowed since `s` is a subtype of `t`
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;So to extend this idea, if we have some arena (of garbage collected values), we want to be sure that there are no live references to those values when garbage collection happens. By modelling pointer objects given out by the arena to be invariant over their lifetime, then we can isolate usage of these pointers and be confident that outside of these isolated areas, the pointers are safe to be collected! This is achieved using PhantomData, where can create invariance over the pointer’s lifetime with zero additional overhead, since PhantomData is a zero sized type.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; Struct has the size of a machine pointer and can implement Copy - great!
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;pub struct &lt;&#x2F;span&gt;&lt;span&gt;Gc&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;#39;gc&lt;&#x2F;span&gt;&lt;span&gt;, T&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    where T: ?Sized + &amp;#39;gc {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; This type is a pointer.
+&lt;&#x2F;span&gt;&lt;span&gt;    ptr: NonNull&amp;lt;GcBox&amp;lt;T&amp;gt;&amp;gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; We also contain a `PhantomData` type which marks the struct as being
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; *invariant* over the &amp;#39;gc lifetime since Cell&amp;lt;T&amp;gt; is invariant over T
+&lt;&#x2F;span&gt;&lt;span&gt;    _invariant: PhantomData&amp;lt;Cell&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;amp;&amp;#39;gc &lt;&#x2F;span&gt;&lt;span&gt;()&amp;gt;&amp;gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The core loop of our Lox interpreter jumps between two states: interpreting steps that mutate the arena state in isolated closures (which have their own invariant lifetime for handling pointers to heap values), and garbage collecting the arena.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;performance-optimisation&quot;&gt;Performance Optimisation&lt;&#x2F;h1&gt;
+&lt;p&gt;In optimising performance of my Lox implementation, I wanted to see how close I could get to the C &lt;code&gt;clox&lt;&#x2F;code&gt; implementation without dipping into unsafe Rust. Inheriting garbage collection through &lt;code&gt;gc-arena&lt;&#x2F;code&gt; already gives me a sort of “cheat” head-start here, through the use of pointer types that implement &lt;code&gt;Copy&lt;&#x2F;code&gt; and avoid the reference counting overhead of &lt;code&gt;Rc&amp;lt;T&amp;gt;&lt;&#x2F;code&gt;. This final section outlines some of the techniques I learned about and used to improve runtime performance. I don’t go down a crazy rabbit hole, but thought it would be fun to pick up some tricks and document them here!&lt;&#x2F;p&gt;
+&lt;p&gt;Overarching all of this is the use of a profiler to hone in on methods that were eating up CPU time. For this I am using MacOS and the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;mstange&#x2F;samply&#x2F;&quot;&gt;samply&lt;&#x2F;a&gt; tool to output performance profiles and visualise using &lt;a href=&quot;https:&#x2F;&#x2F;profiler.firefox.com&#x2F;&quot;&gt;FireFox Profiler&lt;&#x2F;a&gt;. I also used the native profiler “Apple Instruments” via &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cmyr&#x2F;cargo-instruments&#x2F;tree&#x2F;master&quot;&gt;cargo-instruments&lt;&#x2F;a&gt;, which additionally has tools to check for allocation metrics and monitor memory usage.&lt;&#x2F;p&gt;
+&lt;p&gt;Using flamegraphs and flame charts here helped the most to notice areas of the code where performance gains could be found, and also encouraged me to further modularise the code to better understand which nested function calls were being hit heaviest. &lt;a href=&quot;https:&#x2F;&#x2F;www.brendangregg.com&#x2F;flamegraphs.html&quot;&gt;Brendan Gregg&lt;&#x2F;a&gt; has great talks and resources on the topic for deeper understanding of how to analyse these charts.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;assets&#x2F;content&#x2F;crafting-interpreters&#x2F;flame.png&quot; alt=&quot;Flame graph for a benchmark test run&quot; &#x2F;&gt;
+&lt;em&gt;This chart for example shows that pushing values onto our Lox stack takes up ~3% of overall time in our interpreter steps. This could be a candidate for optimising e.g. through &lt;a href=&quot;https:&#x2F;&#x2F;nnethercote.github.io&#x2F;perf-book&#x2F;bounds-checks.html&quot;&gt;removing bounds checks using assertions&lt;&#x2F;a&gt;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;profiling-tips-in-rust&quot;&gt;Profiling Tips in Rust&lt;&#x2F;h2&gt;
+&lt;p&gt;When profiling code, we are most interested in running &lt;code&gt;--release&lt;&#x2F;code&gt; builds of our code, which makes it faster at runtime through taking advantage of methods like clever compiling optimisations and spending time allocating variables to CPU registers. This is additionally at the cost of removing debug symbols, which are useful for debugging tools but bloat the executable.&lt;&#x2F;p&gt;
+&lt;p&gt;However when profiling code, we need these debug symbols around to understand which functions have been sampled. How should we build in release mode with debug symbols, especially when we don’t want our final release build to contain them? Sounds fiddly to constantly amend the &lt;code&gt;Cargo.toml&lt;&#x2F;code&gt; file. Thankfully, here we can leverage cargo profiles and inheritance:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;toml&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-toml &quot;&gt;&lt;code class=&quot;language-toml&quot; data-lang=&quot;toml&quot;&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#808080;&quot;&gt;profile.release&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;codegen-units &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b5cea8;&quot;&gt;1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;lto &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d69d85;&quot;&gt;&amp;quot;fat&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;panic &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d69d85;&quot;&gt;&amp;quot;abort&amp;quot;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#808080;&quot;&gt;profile.profiling&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;inherits &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d69d85;&quot;&gt;&amp;quot;release&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;debug &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;true
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;strip &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;false
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;By running profiling using a dedicated cargo profile, we can inherit all the release properties of our regular release profile, while adding attributes required to do proper profile testing (&lt;code&gt;strip = false&lt;&#x2F;code&gt; here instructs the compiler to avoid removing debug symbols from the binary too). No more mental overhead remembering the state of your release profile.&lt;&#x2F;p&gt;
+&lt;p&gt;In addition to profiles, I also wanted to mention “inlining”. The compiler will ultimately do what it wants - if a function is called many times (it’s hot) and is small &#x2F; doesn’t have its own nested function calls, it is a good candidate for inlining, which will replace the function callsite with the function code itself. This reduces code jumping at runtime, at the cost of larger executable size. However when profiling an application, sometimes a function is inlined which disables you from analysing the line-by-line performance of the function at runtime. Here, subtle hinting to the compiler by using &lt;code&gt;#inline(never)&lt;&#x2F;code&gt; can be helpful.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;techniques&quot;&gt;Techniques&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;hashing&quot;&gt;Hashing&lt;&#x2F;h3&gt;
+&lt;p&gt;This is mentioned by many other write-ups on Lox implementation, and switching the default &lt;code&gt;HashMap&lt;&#x2F;code&gt; hasher indeed did help with performance. However, more interestingly, larger speedups were found in my personal implementation through patching the underlying &lt;code&gt;Gc&amp;lt;&#x27;gc, T&amp;gt;&lt;&#x2F;code&gt; pointer type provided by &lt;code&gt;gc-arena&lt;&#x2F;code&gt; (used as map keys).&lt;&#x2F;p&gt;
+&lt;p&gt;Hashing and equality were implemented by dereferencing to the underlying type and using that. But if we look at &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;primitive.pointer.html#impl-Hash-for-*const+T&quot;&gt;how primitive pointers implement &lt;code&gt;Hash&lt;&#x2F;code&gt; and &lt;code&gt;PartialEq&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;, it uses the pointer address itself. This simple change resulted in speedups of 30 to 50 percent across benchmarks.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;impl&lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;#39;gc&lt;&#x2F;span&gt;&lt;span&gt;, T: Hash &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;+ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#ff3333;&quot;&gt;?&lt;&#x2F;span&gt;&lt;span&gt;Sized + &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;#39;gc&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt; Hash for Gc&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;#39;gc&lt;&#x2F;span&gt;&lt;span&gt;, T&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span&gt;hash&amp;lt;H: Hasher&amp;gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;amp;&lt;&#x2F;span&gt;&lt;span&gt;self, state: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;&amp;amp;mut&lt;&#x2F;span&gt;&lt;span&gt; H) {
+&lt;&#x2F;span&gt;&lt;span&gt;        ptr::hash(Gc::as_ptr(*self), state);
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;option-unwrapping&quot;&gt;Option Unwrapping&lt;&#x2F;h3&gt;
+&lt;p&gt;This one is less exciting, but caught me off guard. When fetching a variable from our local code block, a simple map from string to value is used. Lookup has potential to return an empty &lt;code&gt;Option::None&lt;&#x2F;code&gt;, and so &lt;code&gt;.ok_or(Error::UndefinedVariable(string))?&lt;&#x2F;code&gt; was used to safely unwrap the value or propagate a runtime error.&lt;&#x2F;p&gt;
+&lt;p&gt;However, this method showed up a lot when profiling -it turns out that the construction of this error variant was not lazy, and so string cloning and allocation was happening even on the happy path. The way around this was to instead use &lt;code&gt;.ok_or_else(|| Error::UndefinedVariable(string))?&lt;&#x2F;code&gt; to defer the unhappy path allocations.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;enum-sizing&quot;&gt;Enum Sizing&lt;&#x2F;h3&gt;
+&lt;p&gt;One idea I had was to re-model the opcode enum that I used to represent operations in the virtual machine - initially I used data-carrying variants to model operations that required extra bytes of information to work. For example:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;enum &lt;&#x2F;span&gt;&lt;span&gt;Operation {
+&lt;&#x2F;span&gt;&lt;span&gt;  Return,
+&lt;&#x2F;span&gt;&lt;span&gt;  Add,
+&lt;&#x2F;span&gt;&lt;span&gt;  Jump(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;),  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#608b4e;&quot;&gt;&#x2F;&#x2F; u8 represents frame pointer jump distance
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This simple model worked well and is clean - when reading the &lt;code&gt;Jump&lt;&#x2F;code&gt; opcode, we immediately have access to jump offset data. However this enum would have a size in memory determined by the size of its largest variant (see details on memory and alignment &lt;a href=&quot;https:&#x2F;&#x2F;garden.christophertee.dev&#x2F;blogs&#x2F;Memory-Alignment-and-Layout&#x2F;Part-1#enums&quot;&gt;here&lt;&#x2F;a&gt;). In general it is best to use smaller types where possible, to maximise the amount of data the CPU &lt;a href=&quot;https:&#x2F;&#x2F;darkcoding.net&#x2F;software&#x2F;does-it-matter-what-type-i-use&#x2F;&quot;&gt;pulls into its cache lines&lt;&#x2F;a&gt; in one go, speeding up the programme runtime. So I switched up the enum:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#1e1e1e;color:#dcdcdc;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;enum &lt;&#x2F;span&gt;&lt;span&gt;Operation {
+&lt;&#x2F;span&gt;&lt;span&gt;  Return,
+&lt;&#x2F;span&gt;&lt;span&gt;  Add,
+&lt;&#x2F;span&gt;&lt;span&gt;  Jump,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#569cd6;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, when a &lt;code&gt;Jump&lt;&#x2F;code&gt; byte was read, an extra byte would need to be read to also fetch the jump offset data. In practice, this did not result in the sort of speed-ups I expected. Code needed to be stored as a &lt;code&gt;Vec&amp;lt;u8&amp;gt;&lt;&#x2F;code&gt; rather than &lt;code&gt;Vec&amp;lt;Operation&amp;gt;&lt;&#x2F;code&gt; to be able to also store additional opcode data, and conversions from &lt;code&gt;u8&lt;&#x2F;code&gt; to &lt;code&gt;Operation&lt;&#x2F;code&gt; were now showing up as hot in the profiler.&lt;&#x2F;p&gt;
+&lt;p&gt;Going against my preference for type safety and leveraging enum-exhaustiveness, I decided to model operations instead as &lt;code&gt;const u8&lt;&#x2F;code&gt; values and match on those. This appeared to have a more noticeable impact on performance.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;results&quot;&gt;Results&lt;&#x2F;h2&gt;
+&lt;p&gt;Plotted below is a comparison of each model (baseline, baseline + optimisations, original book implementation &lt;code&gt;clox&lt;&#x2F;code&gt;) run on each benchmark test, using a weighted average across five runs:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;assets&#x2F;content&#x2F;crafting-interpreters&#x2F;plot.png&quot; alt=&quot;Bar chart for benchmark results&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I think overall this looks positive - using some simple profiling analysis, the performance of the safe Rust interpreter was cut down to within touching distance of &lt;code&gt;clox&lt;&#x2F;code&gt;. There is always more that can be investigated - further hotspots in the profiling, garbage collection parameter tuning, &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;rustc&#x2F;profile-guided-optimization.html&quot;&gt;profile-guided optimisation&lt;&#x2F;a&gt;, using &lt;a href=&quot;https:&#x2F;&#x2F;rust-lang.github.io&#x2F;packed_simd&#x2F;perf-guide&#x2F;introduction.html&quot;&gt;SIMD instructions&lt;&#x2F;a&gt;, fine tuning hash and allocator combinations, … I’m happy enough with what I’ve learned to stop here!&lt;&#x2F;p&gt;
+&lt;p&gt;My main takeaway from this exercise has been that safe Rust is powerful, but needs careful attention to really squeeze performance out of it (and likely also descension into unsafe Rust). Without a &lt;code&gt;clox&lt;&#x2F;code&gt; benchmark to compare against, how would I know that “my Rust is as fast as C”? My general feeling is that, in the hand-crafted cases, it often might not be. However, when the positive trade-off is better memory safety and protections that greatly improve developer velocity, I will take that trade nine times out of ten.&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>
