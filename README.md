@@ -13,4 +13,4 @@ zola serve
 
 ## ©️ License
 
-Source code in this repository is available under the [MIT License](LICENSE). The icons used throughout the site are kindly provided by [UXWing](https://uxwing.com/license/). Read their [license](https://uxwing.com/license/).
+Source code in this repository is available under the [MIT License](LICENSE). The icons used throughout the site are kindly provided by [UXWing](https://uxwing.com/license/). Read their license [here](https://uxwing.com/license/).
